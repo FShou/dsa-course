@@ -21,17 +21,6 @@ export default class SinglyLinkedList<T> {
         }
         return node;
     }
-    private beforeAt(idx: number): Node<T> | undefined {
-        if (!this.head) return undefined;
-        if (idx === 0) return undefined;
-        let node = this.head;
-        for (let i = 0; i < idx - 1; ++i) {
-            if (!node.next) return undefined;
-            node = node.next;
-        }
-        return node;
-    }
-
     prepend(item: T): void {
         this.length++;
         const node: Node<T> = {
@@ -94,14 +83,22 @@ export default class SinglyLinkedList<T> {
 
     removeAt(idx: number): T | undefined {
         if (!this.head) return undefined;
+        let node = this.head;
+
         if (idx === 0) {
             this.length--;
-            const node = this.head;
             this.head = node.next;
             return node.value;
         }
-        const node = this.beforeAt(idx);
-        if (!node || !node.next) return undefined;
+
+        // traverse to before idx
+        for (let i = 0; i < idx - 1; ++i) {
+            if (!node.next) return undefined;
+            node = node.next;
+        }
+
+        if (!node.next) return undefined;
+
         this.length--;
         const willRemoved = node.next;
         if (willRemoved === this.tail) {
